@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laila — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rose: #c8707a;
+    --rose-deep: #9b3a47;
+    --rose-soft: #f0d0d4;
+    --rose-glow: rgba(200,112,122,0.18);
+    --cream: #fdf5f0;
+    --ink: #1a1118;
+    --ink-mid: #4a3040;
+    --ink-light: #8a6878;
+    --surface: #fff8f6;
+    --card: rgba(255,255,255,0.85);
+    --border: rgba(200,112,122,0.2);
+    --success: #5a9a6a;
+    --warning: #c8906a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Atmospheric background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 15% 20%, rgba(200,112,122,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 60% at 85% 80%, rgba(155,58,71,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 50% 50%, rgba(240,208,212,0.15) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Grain texture */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+
+  /* HEADER */
+  header {
+    padding: 40px 0 32px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo-mark {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 4px 20px rgba(200,112,122,0.35);
+    animation: pulse-glow 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 4px 20px rgba(200,112,122,0.35); }
+    50% { box-shadow: 0 4px 32px rgba(200,112,122,0.6); }
+  }
+
+  .logo-text h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+
+  .logo-text p {
+    font-size: 12px;
+    color: var(--ink-light);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .header-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 18px;
+    font-size: 13px;
+    color: var(--ink-mid);
+    backdrop-filter: blur(10px);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    animation: blink 2s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .grid-full { grid-column: 1 / -1; }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px;
+    backdrop-filter: blur(12px);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(200,112,122,0.12);
+  }
+
+  .card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .card-subtitle {
+    font-size: 13px;
+    color: var(--ink-light);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  /* CONNECT TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--rose-soft);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 24px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 9px;
+    text-align: center;
+    border: none;
+    background: transparent;
+    border-radius: 9px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-mid);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .tab.active {
+    background: white;
+    color: var(--rose-deep);
+    box-shadow: 0 2px 8px rgba(200,112,122,0.2);
+  }
+
+  /* FORM ELEMENTS */
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-light);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  input[type="tel"], input[type="text"] {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  input:focus {
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px var(--rose-glow);
+  }
+
+  /* BUTTONS */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 24px;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    width: 100%;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--rose), var(--rose-deep));
+    color: white;
+    box-shadow: 0 4px 16px rgba(200,112,122,0.35);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(200,112,122,0.5);
+  }
+
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--rose-deep);
+    border: 1px solid var(--border);
+  }
+
+  .btn-outline:hover { background: var(--rose-soft); }
+
+  /* QR DISPLAY */
+  .qr-area {
+    text-align: center;
+    padding: 24px;
+    background: var(--surface);
+    border: 2px dashed var(--border);
+    border-radius: 16px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .qr-placeholder {
+    width: 160px;
+    height: 160px;
+    display: grid;
+    grid-template-columns: repeat(8,1fr);
+    gap: 3px;
+    opacity: 0.3;
+  }
+
+  .qr-pixel {
+    background: var(--rose-deep);
+    border-radius: 1px;
+    animation: qr-flicker 2s ease-in-out infinite;
+  }
+
+  .qr-pixel:nth-child(odd) { animation-delay: 0.3s; }
+
+  @keyframes qr-flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .qr-label {
+    font-size: 13px;
+    color: var(--ink-light);
+    font-style: italic;
+  }
+
+  /* PAIRING CODE */
+  .pairing-code {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: 8px;
+    color: var(--rose-deep);
+    text-align: center;
+    padding: 20px;
+    background: var(--rose-soft);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    margin: 16px 0;
+  }
+
+  /* SESSION CARDS */
+  .session-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .session-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    animation: slide-in 0.3s ease;
+  }
+
+  @keyframes slide-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .session-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .session-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--rose-soft), var(--rose));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .session-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .session-phone {
+    font-size: 12px;
+    color: var(--ink-light);
+    margin-top: 2px;
+  }
+
+  .badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 100px;
+    letter-spacing: 0.03em;
+  }
+
+  .badge-active {
+    background: rgba(90,154,106,0.15);
+    color: var(--success);
+  }
+
+  .badge-connecting {
+    background: rgba(200,144,106,0.15);
+    color: var(--warning);
+  }
+
+  .btn-disconnect {
+    background: none;
+    border: 1px solid rgba(200,112,122,0.3);
+    color: var(--rose);
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+
+  .btn-disconnect:hover {
+    background: rgba(200,112,122,0.1);
+  }
+
+  /* STATS */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+  }
+
+  .stat-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    font-weight: 600;
+    color: var(--rose-deep);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--ink-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 6px;
+  }
+
+  /* PERSONALITY CARD */
+  .personality-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .p-tag {
+    background: var(--rose-soft);
+    color: var(--rose-deep);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+
+  /* QUICK SEND */
+  .quick-send {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .quick-send input { flex: 1; margin: 0; }
+
+  .quick-send .btn {
+    width: auto;
+    padding: 12px 20px;
+    white-space: nowrap;
+  }
+
+  /* MANUAL REPLY SECTION */
+  .silence-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: rgba(200,112,122,0.06);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-top: 12px;
+  }
+
+  .silence-info {
+    font-size: 13px;
+    color: var(--ink-mid);
+  }
+
+  .silence-info strong { color: var(--rose-deep); }
+
+  /* TOGGLE */
+  .toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+  }
+
+  .toggle input { display: none; }
+
+  .slider {
+    position: absolute;
+    inset: 0;
+    background: #d0c0c4;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .slider::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: white;
+    top: 3px;
+    left: 3px;
+    transition: transform 0.3s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+
+  .toggle input:checked + .slider { background: var(--rose); }
+  .toggle input:checked + .slider::after { transform: translateX(20px); }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding-top: 40px;
+    font-size: 12px;
+    color: var(--ink-light);
+    letter-spacing: 0.04em;
+  }
+
+  footer span { color: var(--rose); }
+
+  /* STEP GUIDE */
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--ink-mid);
+    line-height: 1.5;
+  }
+
+  .step-num {
+    min-width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--rose-soft);
+    color: var(--rose-deep);
+    font-weight: 600;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+
+  @media (max-width: 700px) {
+    .grid { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(3,1fr); }
+    header { flex-direction: column; gap: 16px; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <div class="logo-mark">🌹</div>
+      <div class="logo-text">
+        <h1>Laila</h1>
+        <p>WhatsApp AI Bot Dashboard</p>
+      </div>
+    </div>
+    <div class="header-status">
+      <div class="status-dot"></div>
+      System Online
+    </div>
+  </header>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-number" id="stat-sessions">2</div>
+      <div class="stat-label">Active Sessions</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number" id="stat-replies">847</div>
+      <div class="stat-label">AI Replies Today</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number" id="stat-reactions">1.2k</div>
+      <div class="stat-label">Reactions Sent</div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="grid">
+
+    <!-- CONNECT CARD -->
+    <div class="card">
+      <div class="card-title">🔗 Connect WhatsApp</div>
+      <div class="card-subtitle">Add a new WhatsApp session to Laila. Choose your preferred connection method.</div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('qr')">📷 QR Code</button>
+        <button class="tab" onclick="switchTab('pairing')">🔢 Pairing Code</button>
+      </div>
+
+      <div id="panel-qr">
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" id="qr-phone" placeholder="+92 300 1234567" />
+        </div>
+        <button class="btn btn-primary" onclick="generateQR()">Generate QR Code ✨</button>
+
+        <div id="qr-display" style="margin-top:16px; display:none;">
+          <div class="qr-area">
+            <div class="qr-placeholder" id="qr-pixels"></div>
+            <div class="qr-label">Scan with WhatsApp → Linked Devices → Link a Device</div>
+          </div>
+        </div>
+
+        <div class="steps" style="margin-top:16px;">
+          <div class="step"><div class="step-num">1</div> Enter your phone number above</div>
+          <div class="step"><div class="step-num">2</div> Click Generate — a QR code will appear</div>
+          <div class="step"><div class="step-num">3</div> Open WhatsApp → Settings → Linked Devices → Link a Device</div>
+          <div class="step"><div class="step-num">4</div> Scan the code — Laila activates instantly ✨</div>
+        </div>
+      </div>
+
+      <div id="panel-pairing" style="display:none;">
+        <div class="form-group">
+          <label>Phone Number (with country code)</label>
+          <input type="tel" id="pair-phone" placeholder="923001234567" />
+        </div>
+        <button class="btn btn-primary" onclick="generatePairingCode()">Get Pairing Code 🔢</button>
+
+        <div id="pairing-display" style="display:none;">
+          <div class="pairing-code" id="pairing-code-value">XXXX-XXXX</div>
+          <p style="font-size:13px; color:var(--ink-light); text-align:center;">Enter this code in WhatsApp → Linked Devices → Link with Phone Number</p>
+        </div>
+
+        <div class="steps" style="margin-top:16px;">
+          <div class="step"><div class="step-num">1</div> Enter phone number (no spaces or +)</div>
+          <div class="step"><div class="step-num">2</div> Click Get Pairing Code</div>
+          <div class="step"><div class="step-num">3</div> Open WhatsApp → Settings → Linked Devices → Link with Phone Number</div>
+          <div class="step"><div class="step-num">4</div> Enter the 8-digit code shown — done! 🌹</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVE SESSIONS -->
+    <div class="card">
+      <div class="card-title">📱 Active Sessions</div>
+      <div class="card-subtitle">All currently connected WhatsApp numbers managed by Laila.</div>
+
+      <div class="session-list" id="session-list">
+        <div class="session-item">
+          <div class="session-info">
+            <div class="session-avatar">👩</div>
+            <div>
+              <div class="session-name">Laila Primary</div>
+              <div class="session-phone">+92 300 ••• •567</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span class="badge badge-active">● Active</span>
+            <button class="btn-disconnect" onclick="disconnect(this)">Disconnect</button>
+          </div>
+        </div>
+
+        <div class="session-item">
+          <div class="session-info">
+            <div class="session-avatar">🌸</div>
+            <div>
+              <div class="session-name">Laila Backup</div>
+              <div class="session-phone">+92 321 ••• •890</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <span class="badge badge-connecting">◌ Syncing</span>
+            <button class="btn-disconnect" onclick="disconnect(this)">Disconnect</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-outline" style="margin-top:16px;" onclick="refreshSessions()">
+        ↻ Refresh Sessions
+      </button>
+    </div>
+
+    <!-- MANUAL SEND -->
+    <div class="card">
+      <div class="card-title">✍️ Send Manual Message</div>
+      <div class="card-subtitle">Send a message directly. Bot will be silenced for that contact for 30 minutes.</div>
+
+      <div class="form-group">
+        <label>Recipient JID (WhatsApp ID)</label>
+        <input type="text" id="manual-jid" placeholder="923001234567@s.whatsapp.net" />
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <input type="text" id="manual-msg" placeholder="Type your message..." />
+      </div>
+      <button class="btn btn-primary" onclick="sendManual()">Send as Owner 🌹</button>
+
+      <div class="silence-control">
+        <div class="silence-info">
+          <strong>Smart Silence:</strong> Bot pauses after your reply
+        </div>
+        <label class="toggle">
+          <input type="checkbox" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- PERSONALITY -->
+    <div class="card">
+      <div class="card-title">✨ Laila's Personality</div>
+      <div class="card-subtitle">Her character traits that shape every AI reply automatically.</div>
+
+      <div class="personality-tags">
+        <span class="p-tag">💖 Caring</span>
+        <span class="p-tag">😊 Friendly</span>
+        <span class="p-tag">🔥 Playful</span>
+        <span class="p-tag">💼 Professional</span>
+        <span class="p-tag">🌹 Slightly Romantic</span>
+        <span class="p-tag">🧠 Emotionally Intelligent</span>
+        <span class="p-tag">🇵🇰 Urdu + English</span>
+        <span class="p-tag">📱 Human-like Typing</span>
+        <span class="p-tag">⚡ Context-Aware</span>
+      </div>
+
+      <div style="margin-top:20px; padding:14px; background:var(--rose-soft); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-size:12px; color:var(--ink-light); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px;">Sample Reply Style</div>
+        <div style="font-size:14px; color:var(--ink-mid); line-height:1.7; font-style:italic;">
+          "Haan bilkul, main yahan hoon ❤️ Kuch hua hai kya? Bata mujhe..."<br>
+          <span style="font-size:12px; color:var(--ink-light);">— Caring tone triggered by sad message</span>
+        </div>
+      </div>
+
+      <div style="margin-top:12px; padding:14px; background:var(--rose-soft); border-radius:12px; border:1px solid var(--border);">
+        <div style="font-size:14px; color:var(--ink-mid); line-height:1.7; font-style:italic;">
+          "Haha you're too funny 😄 But okay okay, I'll give you that one 🔥"<br>
+          <span style="font-size:12px; color:var(--ink-light);">— Playful tone triggered by humorous message</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEATURE STATUS -->
+    <div class="card grid-full">
+      <div class="card-title">⚙️ Feature Status</div>
+      <div class="card-subtitle">Toggle Laila's capabilities in real-time.</div>
+
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:12px;">
+
+        <div class="silence-control" style="margin:0;">
+          <div class="silence-info">🤖 <strong>AI Auto-Reply</strong></div>
+          <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="silence-control" style="margin:0;">
+          <div class="silence-info">❤️ <strong>Emoji Reactions</strong></div>
+          <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="silence-control" style="margin:0;">
+          <div class="silence-info">⌨️ <strong>Typing Indicator</strong></div>
+          <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="silence-control" style="margin:0;">
+          <div class="silence-info">🔕 <strong>Smart Silence</strong></div>
+          <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="silence-control" style="margin:0;">
+          <div class="silence-info">🌐 <strong>Urdu + English Mix</strong></div>
+          <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+
+        <div class="silence-control" style="margin:0;">
+          <div class="silence-info">🔧 <strong>Debug Logging</strong></div>
+          <label class="toggle"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /grid -->
+
+  <footer>
+    Built with ❤️ for <span>Laila</span> — Powered by Baileys + Groq AI &nbsp;·&nbsp; Free & Open Source
+  </footer>
+</div>
+
+<script>
+  // Tab switching
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('panel-qr').style.display = tab === 'qr' ? 'block' : 'none';
+    document.getElementById('panel-pairing').style.display = tab === 'pairing' ? 'block' : 'none';
+    event.target.classList.add('active');
+  }
+
+  // Generate QR (connects to your backend)
+  async function generateQR() {
+    const phone = document.getElementById('qr-phone').value;
+    if (!phone) return alert('Please enter a phone number!');
+
+    const display = document.getElementById('qr-display');
+    display.style.display = 'block';
+
+    // Generate fake QR pixels for demo
+    const pixelDiv = document.getElementById('qr-pixels');
+    pixelDiv.innerHTML = '';
+    for (let i = 0; i < 64; i++) {
+      const px = document.createElement('div');
+      px.className = 'qr-pixel';
+      px.style.opacity = Math.random() > 0.4 ? '1' : '0';
+      px.style.animationDelay = `${Math.random() * 2}s`;
+      pixelDiv.appendChild(px);
+    }
+
+    // In production, connect to your backend:
+    // const BACKEND = 'https://your-railway-app.railway.app';
+    // const res = await fetch(`${BACKEND}/api/session/connect`, {
+    //   method: 'POST',
+    //   headers: {'Content-Type':'application/json'},
+    //   body: JSON.stringify({ phoneNumber: phone, mode: 'qr' })
+    // });
+    // const { sessionId } = await res.json();
+    // Then listen via Socket.IO for QR code and display it
+  }
+
+  // Generate pairing code
+  async function generatePairingCode() {
+    const phone = document.getElementById('pair-phone').value;
+    if (!phone) return alert('Please enter a phone number!');
+
+    const display = document.getElementById('pairing-display');
+    display.style.display = 'block';
+
+    // Demo code — replace with real backend call
+    const fakeCode = Array.from({length:8}, () => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'[Math.floor(Math.random()*36)]).join('');
+    document.getElementById('pairing-code-value').textContent = fakeCode.slice(0,4) + '-' + fakeCode.slice(4);
+  }
+
+  // Send manual message
+  function sendManual() {
+    const jid = document.getElementById('manual-jid').value;
+    const msg = document.getElementById('manual-msg').value;
+    if (!jid || !msg) return alert('Fill in both fields!');
+
+    // In production:
+    // fetch(`${BACKEND}/api/message/send`, {
+    //   method: 'POST',
+    //   headers: {'Content-Type':'application/json'},
+    //   body: JSON.stringify({ sessionId: 'your-session', jid, text: msg })
+    // });
+
+    alert(`✅ Message sent!\nBot silenced for this contact for 30 min.`);
+    document.getElementById('manual-msg').value = '';
+  }
+
+  function disconnect(btn) {
+    const item = btn.closest('.session-item');
+    const name = item.querySelector('.session-name').textContent;
+    if (confirm(`Disconnect "${name}"?`)) {
+      item.style.opacity = '0.5';
+      setTimeout(() => item.remove(), 300);
+      const countEl = document.getElementById('stat-sessions');
+      countEl.textContent = Math.max(0, parseInt(countEl.textContent) - 1);
+    }
+  }
+
+  function refreshSessions() {
+    // In production: fetch sessions from backend and re-render
+    alert('Sessions refreshed! (Connect to backend to see live data)');
+  }
+
+  // Animate stats on load
+  function animateCount(el, target, suffix='') {
+    let current = 0;
+    const step = target / 40;
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target);
+      el.textContent = Math.floor(current) + suffix;
+      if (current >= target) clearInterval(timer);
+    }, 30);
+  }
+
+  window.addEventListener('load', () => {
+    animateCount(document.getElementById('stat-sessions'), 2);
+    animateCount(document.getElementById('stat-replies'), 847);
+    animateCount(document.getElementById('stat-reactions'), 1200);
+    setTimeout(() => {
+      document.getElementById('stat-reactions').textContent = '1.2k';
+    }, 1300);
+  });
+</script>
+</body>
+</html>
